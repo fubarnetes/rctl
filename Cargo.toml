@@ -1,0 +1,23 @@
+[package]
+name = "rctl"
+version = "0.0.1"
+authors = ["Fabian Freyer <fabian.freyer@physik.tu-berlin.de>"]
+description = "FreeBSD resource limits and accounting with RCTL / RACCT"
+license = "BSD-3-Clause"
+keywords = ["freebsd"]
+categories = ["os:unix-apis", "api-bindings"]
+readme = "README.md"
+
+[badges]
+maintenance = { status = "experimental" }
+travis-ci = { repository = "fubarnetes/rctl", branch = "master" }
+is-it-maintained-issue-resolution = { repository = "fubarnetes/rctl" }
+is-it-maintained-open-issues = { repository = "fubarnetes/rctl" }
+
+[dependencies]
+failure = "0.1"
+libc = "0.2"
+nix = "0.11"
+number_prefix = "0.2"
+sysctl = "0.2"
+users = "0.7"
