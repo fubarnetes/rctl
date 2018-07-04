@@ -1782,6 +1782,7 @@ fn rctl_api_wrapper<S: Into<String>>(
                     continue;
                 }
                 Some(libc::ENOSYS) => break Err(Error::InvalidKernelState(State::check())),
+                Some(libc::ESRCH) => break Ok("".into()),
                 _ => break Err(Error::OsError(err)),
             }
         }
