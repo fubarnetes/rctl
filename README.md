@@ -7,6 +7,7 @@
 releases](https://img.shields.io/librariesio/release/cargo/rctl.svg?style=flat-square)](https://libraries.io/cargo/rctl/)
 [![Crates.io](https://img.shields.io/crates/d/rctl.svg?style=flat-square)](https://crates.io/crates/rctl)
 [![Crates.io](https://img.shields.io/crates/l/rctl.svg?style=flat-square)](https://crates.io/crates/rctl)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ffubarnetes%2Frctl.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ffubarnetes%2Frctl?ref=badge_shield)
 
 # Is it any good?
 [Yes.](https://news.ycombinator.com/item?id=3067434)
@@ -15,3 +16,7 @@ releases](https://img.shields.io/librariesio/release/cargo/rctl.svg?style=flat-s
 
 This library is still under heavy development, but seems to work so far.
 No stability guarantees are made.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ffubarnetes%2Frctl.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ffubarnetes%2Frctl?ref=badge_large)
