@@ -278,6 +278,9 @@ impl Subject {
     /// ```
     /// # extern crate rctl;
     /// # use rctl;
+    /// # if !rctl::State::check().is_enabled() {
+    /// #     return;
+    /// # }
     /// extern crate libc;
     ///
     /// let uid = unsafe { libc::getuid() };
@@ -1038,6 +1041,9 @@ impl Rule {
     ///
     /// ```
     /// # extern crate rctl;
+    /// # if !rctl::State::check().is_enabled() {
+    /// #     return;
+    /// # }
     /// use rctl::{Rule, Subject, Resource, Action, Limit};
     ///
     /// let rule = Rule {
@@ -1071,6 +1077,9 @@ impl Rule {
     ///
     /// ```
     /// # extern crate rctl;
+    /// # if !rctl::State::check().is_enabled() {
+    /// #     return;
+    /// # }
     /// use rctl::{Rule, Subject, Resource, Action, Limit};
     ///
     /// let rule = Rule {
@@ -1430,6 +1439,9 @@ impl Filter {
     ///
     /// ```
     /// # extern crate rctl;
+    /// # if !rctl::State::check().is_enabled() {
+    /// #     return;
+    /// # }
     /// # use rctl::{Rule, Resource, Action, Limit};
     /// use rctl::{Filter, Subject};
     /// # let rule = Rule {
@@ -1676,6 +1688,9 @@ pub enum State {
     /// options         RCTL
     /// ```
     NotPresent,
+
+    /// `RCTL` is not available within a Jail
+    Jailed,
 }
 
 impl State {
@@ -1692,6 +1707,20 @@ impl State {
     /// let state = rctl::State::check();
     /// ```
     pub fn check() -> State {
+        // RCTL is not available in a jail
+        let jailed = sysctl::Ctl::new("security.jail.jailed");
+
+        // If the sysctl call fails (unlikely), we assume we're in a Jail.
+        if jailed.is_err() {
+            return State::Jailed;
+        }
+
+        match jailed.unwrap().value() {
+            Ok(sysctl::CtlValue::Int(0)) => {}
+            _ => return State::Jailed,
+        };
+
+        // Check the kern.racct.enable sysctl.
         let enable_racct = sysctl::Ctl::new("kern.racct.enable");
 
         // If the sysctl call fails, we assume it to be disabled.
@@ -1752,6 +1781,7 @@ impl fmt::Display for State {
             State::Enabled => write!(f, "enabled"),
             State::Disabled => write!(f, "disabled"),
             State::NotPresent => write!(f, "not present"),
+            State::Jailed => write!(f, "not available in a jail"),
         }
     }
 }
@@ -1780,6 +1810,13 @@ fn rctl_api_wrapper<S: Into<String>>(
                     let current_len = outbuf.len();
                     outbuf.resize(current_len + RCTL_DEFAULT_BUFSIZE, 0);
                     continue;
+                }
+                Some(libc::EPERM) => {
+                    let state = State::check();
+                    break match state.is_enabled() {
+                        true => Err(Error::OsError(err)),
+                        false => Err(Error::InvalidKernelState(State::check())),
+                    };
                 }
                 Some(libc::ENOSYS) => break Err(Error::InvalidKernelState(State::check())),
                 Some(libc::ESRCH) => break Ok("".into()),
@@ -2044,6 +2081,10 @@ pub mod tests {
 
     #[test]
     fn iterate_rules() {
+        if !State::check().is_enabled() {
+            return;
+        }
+
         let common_subject = Subject::jail_name("testjail_rctl_rules");
         let rule1 = Rule {
             subject: common_subject.clone(),
