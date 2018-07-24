@@ -100,7 +100,8 @@ pub enum Error {
     OsError(#[cause] io::Error),
 
     #[fail(
-        display = "An interior Nul byte was found while attempting to construct a CString: {}", _0
+        display = "An interior Nul byte was found while attempting to construct a CString: {}",
+        _0
     )]
     CStringError(#[cause] NulError),
 
