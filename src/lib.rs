@@ -46,7 +46,7 @@ extern crate number_prefix;
 extern crate sysctl;
 extern crate users;
 
-use nix::sys::signal::Signal;
+pub use nix::sys::signal::Signal;
 use number_prefix::{binary_prefix, Prefix, Prefixed, Standalone};
 use std::collections::HashMap;
 use std::ffi::{CStr, CString, NulError};
@@ -714,8 +714,7 @@ pub enum Action {
     /// # Example
     /// ```
     /// # extern crate rctl;
-    /// extern crate nix;
-    /// use nix::sys::signal::Signal;
+    /// use rctl::Signal;
     /// use rctl::Action;
     ///
     /// let action = Action::Signal(Signal::SIGTERM);
@@ -746,12 +745,11 @@ impl Action {
     /// assert_eq!(Action::Deny.as_str(), "deny");
     /// ```
     ///
-    /// Signals are handled by `nix::sys::signal::Signal`:
+    /// Signals are handled by `rctl::Signal`:
     /// ```
     /// # extern crate rctl;
-    /// extern crate nix;
     /// # use rctl::Action;
-    /// use nix::sys::signal::Signal;
+    /// use rctl::Signal;
     /// assert_eq!(Action::Signal(Signal::SIGKILL).as_str(), "sigkill");
     /// ```
     ///
@@ -1346,10 +1344,8 @@ impl Filter {
     /// # Example
     ///
     /// ```
-    /// extern crate nix;
     /// # extern crate rctl;
-    /// use nix::sys::signal::Signal;
-    /// # use rctl::{Filter, Action};
+    /// # use rctl::{Filter, Action, Signal};
     /// let filter = Filter::new()
     ///     .signal(Signal::SIGTERM);
     /// assert_eq!(filter.to_string(), ":::sigterm".to_string());
@@ -1836,7 +1832,6 @@ fn rctl_api_wrapper<S: Into<String>>(
 #[cfg(test)]
 pub mod tests {
     use super::*;
-    use nix;
     use std::collections::HashSet;
 
     #[test]
@@ -1949,7 +1944,7 @@ pub mod tests {
             "sigterm"
                 .parse::<Action>()
                 .expect("could not parse sigterm action"),
-            Action::Signal(nix::sys::signal::Signal::SIGTERM)
+            Action::Signal(Signal::SIGTERM)
         );
 
         assert!("bogus".parse::<Action>().is_err());
