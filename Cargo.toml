@@ -1,6 +1,6 @@
 [package]
 name = "rctl"
-version = "0.0.5"
+version = "0.0.6-alpha.0"
 authors = ["Fabian Freyer <fabian.freyer@physik.tu-berlin.de>"]
 description = "FreeBSD resource limits and accounting with RCTL / RACCT"
 license = "BSD-3-Clause"
