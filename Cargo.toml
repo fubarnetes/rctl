@@ -15,9 +15,14 @@ maintenance = { status = "experimental" }
 is-it-maintained-issue-resolution = { repository = "fubarnetes/rctl" }
 is-it-maintained-open-issues = { repository = "fubarnetes/rctl" }
 
+[features]
+serialize = ["serde", "serde_json"]
+
 [dependencies]
 failure = "0.1"
 libc = "0.2"
 nix = "0.13"
 number_prefix = "0.2"
 sysctl = "0.3"
+serde = { version="1.0", features = ["derive"], optional=true }
+serde_json = { version="1.0", optional=true }
