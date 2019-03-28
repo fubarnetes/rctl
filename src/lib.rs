@@ -1,4 +1,4 @@
-// Copyright 2018 Fabian Freyer <fabian.freyer@physik.tu-berlin.de>
+// Copyright 2019 Fabian Freyer <fabian.freyer@physik.tu-berlin.de>
 // Copyright 2018 David O'Rourke <david.orourke@gmail.com>
 //
 // Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ mod subject {
     impl fmt::Display for User {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             match get_user_by_uid(self.0) {
-                Some(user) => write!(f, "user:{}", user.name()),
+                Some(user) => write!(f, "user:{}", user.name().to_str().ok_or(fmt::Error)?),
                 None => write!(f, "user:{}", self.0),
             }
         }
