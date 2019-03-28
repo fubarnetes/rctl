@@ -44,6 +44,7 @@ extern crate libc;
 extern crate nix;
 extern crate number_prefix;
 extern crate sysctl;
+extern crate users;
 
 #[cfg(feature = "serialize")]
 #[macro_use]
@@ -95,12 +96,6 @@ pub enum ParseError {
 
     #[fail(display = "Invalid Rule syntax: '{}'", _0)]
     InvalidRuleSyntax(String),
-
-    #[fail(
-        display = "An interior Nul byte was found while attempting to construct a CString: {}",
-        _0
-    )]
-    CStringError(#[cause] NulError),
 }
 
 #[derive(Debug, Fail)]
@@ -129,81 +124,34 @@ mod subject {
     use super::ParseError;
     use libc;
     use std::fmt;
+    use users;
+    use users::{get_user_by_name, get_user_by_uid};
 
     /// Represents a user subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
     #[cfg_attr(feature="serialize", derive(Serialize))]
-    pub struct User(pub libc::uid_t);
+    pub struct User(pub users::uid_t);
 
     impl User {
         pub fn from_uid(uid: libc::uid_t) -> User {
-            User(uid)
+            User(uid as users::uid_t)
         }
 
         pub fn from_name(name: &str) -> Result<User, ParseError> {
-            // From getpwent(3):
-            //
-            // The functions getpwent_r(), getpwnam_r(), and getpwuid_r()
-            // are thread-safe versions of getpwent(), getpwnam(), and
-            // getpwuid(), respectively.
-            //
-            // The caller must provide storage for the results of the search in
-            // the pwd, buffer, bufsize, and result arguments.
-            let c_name = std::ffi::CString::new(name).map_err(ParseError::CStringError)?;
-            let mut passwd: libc::passwd = unsafe { std::mem::zeroed() };
-            const PWBUFLEN: usize = 2048;
-            let mut buf: Vec<libc::c_char> = vec![0; PWBUFLEN];
-            let mut result: *mut libc::passwd = std::ptr::null_mut();
+            let uid = get_user_by_name(name)
+                .ok_or_else(|| ParseError::UnknownUser(name.into()))?
+                .uid();
 
-            unsafe {
-                libc::getpwnam_r(
-                    c_name.as_ptr(),
-                    &mut passwd,
-                    buf.as_mut_ptr(),
-                    buf.len(),
-                    &mut result,
-                );
-            }
-
-            // If an entry is not found or an error occurs, result will be set
-            // to NULL.
-            if result.is_null() {
-                return Err(ParseError::UnknownUser(name.into()));
-            }
-
-            // When these functions are successful, the pwd argument will be
-            // filled-in, and a pointer to that argument will be stored in
-            // result.
-            assert_eq!(result, &mut passwd as *mut libc::passwd);
-            Ok(User::from_uid(passwd.pw_uid))
+            Ok(User::from_uid(uid))
         }
     }
 
     impl fmt::Display for User {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            let mut passwd: libc::passwd = unsafe { std::mem::zeroed() };
-            const PWBUFLEN: usize = 2048;
-            let mut buf: Vec<libc::c_char> = vec![0; PWBUFLEN];
-            let mut result: *mut libc::passwd = std::ptr::null_mut();
-
-            unsafe {
-                libc::getpwuid_r(
-                    self.0,
-                    &mut passwd,
-                    buf.as_mut_ptr(),
-                    buf.len(),
-                    &mut result,
-                );
+            match get_user_by_uid(self.0) {
+                Some(user) => write!(f, "user:{}", user.name()),
+                None => write!(f, "user:{}", self.0),
             }
-
-            // If an entry is not found or an error occurs, result will be set
-            // to NULL.
-            if result.is_null() {
-                return write!(f, "user:{}", self.0);
-            }
-
-            let name = unsafe { std::ffi::CStr::from_ptr(passwd.pw_name) };
-            write!(f, "user:{}", name.to_string_lossy())
         }
     }
 
@@ -267,7 +215,6 @@ mod subject {
     #[cfg(test)]
     mod tests {
         use super::*;
-        use std::process::Command;
 
         #[test]
         fn display_jail_name() {
@@ -293,24 +240,6 @@ mod subject {
                 format!("{}", LoginClass("test".into())),
                 "loginclass:test".to_string()
             );
-        }
-
-        #[test]
-        fn from_name() {
-            let nobody = User::from_name("nobody").expect("no nobody user");
-
-            // Get the UID using the `getent` command.
-            let uid_nobody = Command::new("id")
-                .args(&["-u", "nobody"])
-                .output()
-                .expect("failed to run `id -u nobody`");
-
-            let uid_nobody: libc::uid_t = String::from_utf8_lossy(&uid_nobody.stdout)
-                .trim()
-                .parse()
-                .expect("Could not parse UID");
-
-            assert_eq!(User::from_uid(uid_nobody), nobody);
         }
     }
 }
