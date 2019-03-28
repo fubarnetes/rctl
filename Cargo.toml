@@ -18,6 +18,6 @@ is-it-maintained-open-issues = { repository = "fubarnetes/rctl" }
 [dependencies]
 failure = "0.1"
 libc = "0.2"
-nix = "0.11"
+nix = "0.13"
 number_prefix = "0.2"
 sysctl = "0.2"
