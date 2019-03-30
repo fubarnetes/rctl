@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - ReleaseDate
+## [0.1.0] - 2019-03-30
 ### Added
 - Serde feature flag (#6)
 - Code Coverage scan (#12)
