@@ -1,6 +1,7 @@
 # rctl
 
 [![Build Status](https://api.cirrus-ci.com/github/fubarnetes/rctl.svg)](https://cirrus-ci.com/github/fubarnetes/rctl)
+[![Code Coverage](https://img.shields.io/codecov/c/github/fubarnetes/rctl.svg?logo=codecov&style=flat-square)](https://codecov.io/gh/fubarnetes/rctl)
 [![Crates.io](https://img.shields.io/crates/v/rctl.svg?style=flat-square)](https://crates.io/crates/rctl)
 [![GitHub last commit](https://img.shields.io/github/last-commit/fubarnetes/rctl.svg?style=flat-square)](https://github.com/fubarnetes/librctl-rs/commits/master)
 [![Gitter](https://img.shields.io/gitter/room/fubarnetes/rctl.js.svg?style=flat-square)](https://gitter.im/fubarnetes/librctl-rs)

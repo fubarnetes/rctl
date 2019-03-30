@@ -3,6 +3,9 @@ task:
     matrix:
       image: freebsd-12-0-release-amd64
       image: freebsd-11-2-release-amd64
+  env:
+    CIRRUS_SHELL: /bin/sh
+    CODECOV_TOKEN: ENCRYPTED[19ed503f60fa4f0b823144ff622e376976033344ed8c23ff4b1a7c0cbc4d229613773f0daab548b4f15c2ec52149634b]
   install_script: |
     pkg install -y curl
     curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -11,4 +14,16 @@ task:
     folder: $CARGO_HOME/registry
   build_script: env PATH="$HOME/.cargo/bin:$PATH" cargo build
   test_script: env PATH="$HOME/.cargo/bin:$PATH" cargo test
+  coverage_script: |
+    cat $0
+    echo $SHELL
+    ls -lha target
+    find target/debug -maxdepth 1 -iname 'rctl-*[^\.d]'
+    pkg install -y kcov bash git
+    for file in target/debug/rctl-*[^\.d]; do
+      mkdir -p "target/cov/`basename $file`"
+      kcov --exclude-pattern=$HOME/.cargo,/usr/lib,/usr/local/lib,/usr/src/lib/ --verify "target/cov/`basename $file`" "$file"
+    done
+    curl -s https://codecov.io/bash | bash
+    echo "Uploaded code coverage"
   before_cache_script: rm -rf $CARGO_HOME/registry/index
