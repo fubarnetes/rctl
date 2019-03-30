@@ -51,7 +51,7 @@ extern crate users;
 extern crate serde;
 
 pub use nix::sys::signal::Signal;
-use number_prefix::{binary_prefix, Prefix, Prefixed, Standalone};
+use number_prefix::{NumberPrefix, Prefix, Prefixed, Standalone};
 use std::collections::HashMap;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
@@ -990,7 +990,7 @@ impl str::FromStr for Limit {
 
 impl fmt::Display for Limit {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let amount = match binary_prefix(self.amount as f64) {
+        let amount = match NumberPrefix::binary(self.amount as f64) {
             Standalone(amt) => format!("{}", amt),
             Prefixed(prefix, amt) => {
                 let prefix = match prefix {
