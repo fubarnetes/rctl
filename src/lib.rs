@@ -62,6 +62,8 @@ use std::str;
 #[cfg(feature = "serialize")]
 use serde::Serializer;
 
+use sysctl::Sysctl;
+
 // Set to the same value as found in rctl.c in FreeBSD 11.1
 const RCTL_DEFAULT_BUFSIZE: usize = 128 * 1024;
 
