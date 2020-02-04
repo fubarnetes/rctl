@@ -21,7 +21,7 @@ serialize = ["serde", "serde_json"]
 [dependencies]
 failure = "0.1"
 libc = "0.2"
-nix = "0.15"
+nix = "0.17"
 number_prefix = "0.3"
 sysctl = "0.4"
 serde = { version="1.0", features = ["derive"], optional=true }
