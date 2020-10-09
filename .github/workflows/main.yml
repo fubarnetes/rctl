@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: FreeBSD-vm
+        uses: vmactions/freebsd-vm@v0.0.5
+        with:
+          prepare: |
+            pkg install -y curl
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            . $HOME/.cargo/env
+          run: |
+            env PATH="$HOME/.cargo/bin:$PATH" cargo build
+            env PATH="$HOME/.cargo/bin:$PATH" cargo test
+          usesh: yes
