@@ -19,7 +19,6 @@ jobs:
           prepare: |
             pkg install -y curl
             curl https://sh.rustup.rs -sSf | sh -s -- -y
-            . $HOME/.cargo/env
           run: |
             env PATH="$HOME/.cargo/bin:$PATH" cargo build
             env PATH="$HOME/.cargo/bin:$PATH" cargo test
