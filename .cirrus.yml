@@ -18,12 +18,9 @@ task:
     cat $0
     echo $SHELL
     ls -lha target
-    find target/debug -maxdepth 1 -iname 'librctl-*[^\.d]'
     pkg install -y kcov bash git
-    for file in target/debug/librctl-*[^\.d]; do
-      mkdir -p "target/cov/`basename $file`"
-      kcov --exclude-pattern=$HOME/.cargo,/usr/lib,/usr/local/lib,/usr/src/lib/ --verify "target/cov/`basename $file`" "$file"
-    done
+    cargo install cargo-kcov
+    cargo kcov -- --verify --exclude-pattern=$HOME/.cargo,/usr/lib,/usr/local/lib,/usr/src/lib/
     curl -s https://codecov.io/bash | bash
     echo "Uploaded code coverage"
   before_cache_script: rm -rf $CARGO_HOME/registry/index
