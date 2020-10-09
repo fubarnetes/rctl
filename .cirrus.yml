@@ -15,9 +15,7 @@ task:
   build_script: env PATH="$HOME/.cargo/bin:$PATH" cargo build
   test_script: env PATH="$HOME/.cargo/bin:$PATH" cargo test
   coverage_script: |
-    cat $0
-    echo $SHELL
-    ls -lha target
+    . $HOME/.cargo/env
     pkg install -y kcov bash git
     cargo install cargo-kcov
     cargo kcov -- --verify --exclude-pattern=$HOME/.cargo,/usr/lib,/usr/local/lib,/usr/src/lib/
