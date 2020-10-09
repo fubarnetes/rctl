@@ -18,9 +18,9 @@ task:
     cat $0
     echo $SHELL
     ls -lha target
-    find target/debug -maxdepth 1 -iname 'rctl-*[^\.d]'
+    find target/debug -maxdepth 1 -iname 'librctl-*[^\.d]'
     pkg install -y kcov bash git
-    for file in target/debug/rctl-*[^\.d]; do
+    for file in target/debug/librctl-*[^\.d]; do
       mkdir -p "target/cov/`basename $file`"
       kcov --exclude-pattern=$HOME/.cargo,/usr/lib,/usr/local/lib,/usr/src/lib/ --verify "target/cov/`basename $file`" "$file"
     done
