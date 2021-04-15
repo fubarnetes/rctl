@@ -157,9 +157,9 @@ mod subject {
         }
     }
 
-    impl<'a> Into<String> for &'a User {
-        fn into(self) -> String {
-            format!("user:{}", self.0)
+    impl<'a> From<&'a User> for String {
+        fn from(user: &'a User) -> String {
+            format!("user:{}", user.0)
         }
     }
 
@@ -174,9 +174,9 @@ mod subject {
         }
     }
 
-    impl<'a> Into<String> for &'a Process {
-        fn into(self) -> String {
-            format!("{}", self)
+    impl<'a> From<&'a Process> for String {
+        fn from(proc: &'a Process) -> String {
+            format!("{}", proc)
         }
     }
 
@@ -191,9 +191,9 @@ mod subject {
         }
     }
 
-    impl<'a> Into<String> for &'a Jail {
-        fn into(self) -> String {
-            format!("{}", self)
+    impl<'a> From<&'a Jail> for String {
+        fn from(jail: &'a Jail) -> String {
+            format!("{}", jail)
         }
     }
 
@@ -208,9 +208,9 @@ mod subject {
         }
     }
 
-    impl<'a> Into<String> for &'a LoginClass {
-        fn into(self) -> String {
-            format!("{}", self)
+    impl<'a> From<&'a LoginClass> for String {
+        fn from(login_class: &'a LoginClass) -> String {
+            format!("{}", login_class)
         }
     }
 
@@ -372,9 +372,9 @@ impl fmt::Display for Subject {
     }
 }
 
-impl<'a> Into<String> for &'a Subject {
-    fn into(self) -> String {
-        match self {
+impl<'a> From<&'a Subject> for String {
+    fn from(subject: &'a Subject) -> String {
+        match subject {
             Subject::Process(ref p) => p.into(),
             Subject::User(ref u) => u.into(),
             Subject::Jail(ref j) => j.into(),
@@ -396,12 +396,12 @@ fn parse_user(s: &str) -> Result<Subject, ParseError> {
     }
 }
 
-fn parse_jail(s: &str) -> Result<Subject, ParseError> {
-    Ok(Subject::jail_name(s))
+fn parse_jail(s: &str) -> Subject {
+    Subject::jail_name(s)
 }
 
-fn parse_login_class(s: &str) -> Result<Subject, ParseError> {
-    Ok(Subject::login_class(s))
+fn parse_login_class(s: &str) -> Subject {
+    Subject::login_class(s)
 }
 
 impl str::FromStr for Subject {
@@ -417,8 +417,8 @@ impl str::FromStr for Subject {
             2 => match subject_type {
                 SubjectType::Process => parse_process(parts[1]),
                 SubjectType::User => parse_user(parts[1]),
-                SubjectType::LoginClass => parse_login_class(parts[1]),
-                SubjectType::Jail => parse_jail(parts[1]),
+                SubjectType::LoginClass => Ok(parse_login_class(parts[1])),
+                SubjectType::Jail => Ok(parse_jail(parts[1])),
             },
             _ => Err(ParseError::SubjectBogusData(format!(
                 ":{}",
@@ -474,15 +474,15 @@ impl SubjectType {
     }
 }
 
-impl<'a> Into<&'static str> for &'a SubjectType {
-    fn into(self) -> &'static str {
-        self.as_str()
+impl<'a> From<&'a SubjectType> for &'static str {
+    fn from(subject_type: &'a SubjectType) -> &'static str {
+        subject_type.as_str()
     }
 }
 
-impl<'a> Into<String> for &'a SubjectType {
-    fn into(self) -> String {
-        self.as_str().into()
+impl<'a> From<&'a SubjectType> for String {
+    fn from(subject_type: &'a SubjectType) -> String {
+        subject_type.as_str().into()
     }
 }
 
@@ -679,22 +679,21 @@ impl str::FromStr for Resource {
     }
 }
 
-impl<'a> Into<&'static str> for &'a Resource {
-    fn into(self) -> &'static str {
-        self.as_str()
+impl<'a> From<&'a Resource> for &'a str {
+    fn from(resource: &'a Resource) -> &'a str {
+        resource.as_str()
     }
 }
 
-impl<'a> Into<String> for &'a Resource {
-    fn into(self) -> String {
-        self.as_str().into()
+impl<'a> From<&'a Resource> for String {
+    fn from(resource: &'a Resource) -> String {
+        resource.as_str().to_owned()
     }
 }
 
 impl fmt::Display for Resource {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let r: &'static str = self.into();
-        write!(f, "{}", r)
+        write!(f, "{}", self.as_str())
     }
 }
 
@@ -860,15 +859,15 @@ impl str::FromStr for Action {
     }
 }
 
-impl<'a> Into<&'static str> for &'a Action {
-    fn into(self) -> &'static str {
-        self.as_str()
+impl<'a> From<&'a Action> for &'a str {
+    fn from(action: &'a Action) -> &'a str {
+        action.as_str()
     }
 }
 
-impl<'a> Into<String> for &'a Action {
-    fn into(self) -> String {
-        self.as_str().into()
+impl<'a> From<&'a Action> for String {
+    fn from(action: &'a Action) -> String {
+        action.as_str().into()
     }
 }
 
@@ -1015,13 +1014,13 @@ impl fmt::Display for Limit {
     }
 }
 
-impl<'a> Into<String> for &'a Limit {
-    fn into(self) -> String {
-        let per = match &self.per {
+impl<'a> From<&'a Limit> for String {
+    fn from(limit: &'a Limit) -> String {
+        let per = match &limit.per {
             Some(ref s) => format!("/{}", s),
             None => "".to_string(),
         };
-        format!("{}{}", self.amount, per)
+        format!("{}{}", limit.amount, per)
     }
 }
 
@@ -1127,12 +1126,12 @@ impl fmt::Display for Rule {
     }
 }
 
-impl<'a> Into<String> for &'a Rule {
-    fn into(self) -> String {
-        let subject: String = (&self.subject).into();
-        let resource: &str = (&self.resource).into();
-        let action: &str = (&self.action).into();
-        let limit: String = (&self.limit).into();
+impl<'a> From<&'a Rule> for String {
+    fn from(rule: &'a Rule) -> String {
+        let subject: String = (&rule.subject).into();
+        let resource: &str = (&rule.resource).into();
+        let action: &str = (&rule.action).into();
+        let limit: String = (&rule.limit).into();
         format!("{}:{}:{}={}", subject, resource, action, limit)
     }
 }
@@ -1217,7 +1216,7 @@ impl<'a> RuleParsingExt<'a> for str::Split<'a, &'a str> {
 }
 
 /// A filter can match a set of [Rules](Rule).
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Filter {
     subject_type: Option<SubjectType>,
     subject: Option<Subject>,
@@ -1240,14 +1239,7 @@ impl Filter {
     /// assert_eq!(filter.to_string(), ":".to_string());
     /// ```
     pub fn new() -> Filter {
-        Filter {
-            subject_type: None,
-            subject: None,
-            resource: None,
-            limit: None,
-            action: None,
-            limit_per: None,
-        }
+        Filter::default()
     }
 
     /// Constrain the filter to a specific [SubjectType]
@@ -1578,24 +1570,24 @@ impl fmt::Display for Filter {
     }
 }
 
-impl<'a> Into<String> for &'a Filter {
-    fn into(self) -> String {
-        let subject: String = match self.subject {
+impl<'a> From<&'a Filter> for String {
+    fn from(filter: &'a Filter) -> String {
+        let subject: String = match filter.subject {
             Some(ref s) => s.into(),
             None => ":".into(),
         };
 
-        let resource: &str = match self.resource {
+        let resource: &str = match filter.resource {
             Some(ref r) => r.into(),
             None => "",
         };
 
-        let action: &str = match self.action {
+        let action: &str = match filter.action {
             Some(ref a) => a.into(),
             None => "",
         };
 
-        let limit: String = match self.limit {
+        let limit: String = match filter.limit {
             Some(ref l) => l.into(),
             None => "".into(),
         };
