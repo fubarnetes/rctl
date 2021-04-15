@@ -940,11 +940,6 @@ impl Limit {
             per: Some(per),
         }
     }
-
-    /// Return the String representation of the Limit.
-    pub fn to_string(&self) -> String {
-        format!("{}", self)
-    }
 }
 
 fn parse_limit_with_suffix(s: &str) -> Result<usize, ParseError> {
@@ -968,7 +963,7 @@ fn parse_limit_with_suffix(s: &str) -> Result<usize, ParseError> {
         };
     }
 
-    Err(ParseError::InvalidLimitLiteral(s.into()))
+    Err(ParseError::InvalidLimitLiteral(s))
 }
 
 impl str::FromStr for Limit {
@@ -1059,10 +1054,6 @@ pub struct Rule {
 }
 
 impl Rule {
-    pub fn to_string(&self) -> String {
-        format!("{}", self)
-    }
-
     /// Add this rule to the resource limits database.
     ///
     /// # Example
@@ -1206,11 +1197,11 @@ pub struct RuleParsingIntoIter<S> {
 
 impl<'a> IntoIterator for &'a RuleParsingIntoIter<String> {
     type Item = Rule;
-    type IntoIter = RuleParserAdapter<str::Split<'a, &'a str>>;
+    type IntoIter = RuleParserAdapter<str::Split<'a, char>>;
 
     fn into_iter(self) -> Self::IntoIter {
         RuleParserAdapter {
-            inner: self.inner.split(","),
+            inner: self.inner.split(','),
         }
     }
 }
@@ -1421,11 +1412,6 @@ impl Filter {
             let actual_type: SubjectType = subject.into();
             assert_eq!(&actual_type, subject_type);
         }
-    }
-
-    /// Return the string representation of the [Filter].
-    pub fn to_string(&self) -> String {
-        format!("{}", self)
     }
 
     /// Return an [IntoIterator] over all [Rules] matching this [Filter].
@@ -1785,10 +1771,7 @@ impl State {
     ///
     /// [Enabled]: State::Enabled
     pub fn is_enabled(&self) -> bool {
-        match self {
-            State::Enabled => true,
-            _ => false,
-        }
+        matches!(self, State::Enabled)
     }
 
     /// Return `true` if the kernel has `RCTL` / `RACCT` support compiled in.
@@ -1802,10 +1785,7 @@ impl State {
     /// }
     /// ```
     pub fn is_present(&self) -> bool {
-        match self {
-            State::NotPresent => false,
-            _ => true,
-        }
+        !matches!(self, State::NotPresent)
     }
 }
 
