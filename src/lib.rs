@@ -1755,10 +1755,18 @@ impl State {
         }
 
         match enable_racct.unwrap().value() {
-            Ok(sysctl::CtlValue::Uint(v)) => match v {
-                1 => State::Enabled,
+            Ok(value) => match value {
+                // FreeBSD 13 returns a U8 as the kernel variable is a bool.
+                sysctl::CtlValue::U8(1) => State::Enabled,
+
+                // FreeBSD older than 13 returns a Uint as the kernel variable
+                // is an int.
+                sysctl::CtlValue::Uint(1) => State::Enabled,
+
+                // Other values we assume means RACCT is disabled.
                 _ => State::Disabled,
             },
+
             // If we could not get the sysctl value, assume it to be disabled.
             _ => State::NotPresent,
         }
