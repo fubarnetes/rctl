@@ -131,7 +131,7 @@ mod subject {
 
     /// Represents a user subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature="serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(Serialize))]
     pub struct User(pub users::uid_t);
 
     impl User {
@@ -165,7 +165,7 @@ mod subject {
 
     /// Represents a process subject
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature="serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(Serialize))]
     pub struct Process(pub libc::pid_t);
 
     impl fmt::Display for Process {
@@ -182,7 +182,7 @@ mod subject {
 
     /// Represents a jail subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature="serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(Serialize))]
     pub struct Jail(pub String);
 
     impl fmt::Display for Jail {
@@ -199,7 +199,7 @@ mod subject {
 
     /// Represents a login class subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature="serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(Serialize))]
     pub struct LoginClass(pub String);
 
     impl fmt::Display for LoginClass {
@@ -257,7 +257,7 @@ mod subject {
 ///
 /// [`rctl(8)`]: https://www.freebsd.org/cgi/man.cgi?query=rctl&sektion=8&manpath=FreeBSD+11.2-stable
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-#[cfg_attr(feature="serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
 pub enum Subject {
     Process(subject::Process),
     Jail(subject::Jail),
@@ -430,7 +430,7 @@ impl str::FromStr for Subject {
 
 /// The type of a [Subject].
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[cfg_attr(feature="serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
 pub enum SubjectType {
     Process,
     Jail,
@@ -495,7 +495,7 @@ impl fmt::Display for SubjectType {
 
 /// An Enum representing a resource type
 #[derive(Clone, Copy, Debug, PartialEq, Hash, Eq)]
-#[cfg_attr(feature="serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
 pub enum Resource {
     /// CPU time, in seconds
     CpuTime,
@@ -700,7 +700,7 @@ impl fmt::Display for Resource {
 
 /// Represents the action to be taken when a [Subject] offends against a Rule.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[cfg_attr(feature="serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
 pub enum Action {
     /// Deny the resource allocation
     ///
@@ -738,7 +738,7 @@ pub enum Action {
     /// ```
     ///
     /// [signal]: Signal
-    #[cfg_attr(feature="serialize", serde(serialize_with = "signal_serialize"))]
+    #[cfg_attr(feature = "serialize", serde(serialize_with = "signal_serialize"))]
     Signal(Signal),
 
     /// Slow down process execution
@@ -878,7 +878,7 @@ impl fmt::Display for Action {
     }
 }
 
-#[cfg(feature="serialize")]
+#[cfg(feature = "serialize")]
 fn signal_serialize<S>(signal: &Signal, s: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
@@ -890,7 +890,7 @@ where
 /// Defines how much of a [Resource] a process can use beofore the defined
 /// [Action] triggers.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[cfg_attr(feature="serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
 pub struct Limit {
     amount: usize,
     per: Option<SubjectType>,
@@ -1050,7 +1050,7 @@ impl<'a> Into<String> for &'a Limit {
 /// assert_eq!(rule.to_string(), "user:nobody:vmemoryuse:deny=1g".to_string());
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[cfg_attr(feature="serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
 pub struct Rule {
     pub subject: Subject,
     pub resource: Resource,
@@ -1821,8 +1821,12 @@ impl fmt::Display for State {
 }
 
 fn rctl_api_wrapper<S: Into<String>>(
-    api: unsafe extern "C" fn(*const libc::c_char, libc::size_t, *mut libc::c_char, libc::size_t)
-        -> libc::c_int,
+    api: unsafe extern "C" fn(
+        *const libc::c_char,
+        libc::size_t,
+        *mut libc::c_char,
+        libc::size_t,
+    ) -> libc::c_int,
     input: S,
 ) -> Result<String, Error> {
     // Get the input buffer as a C string.
@@ -1835,7 +1839,15 @@ fn rctl_api_wrapper<S: Into<String>>(
 
     loop {
         // Unsafe C call to get the jail resource usage.
-        if unsafe { api(inbuf.as_ptr(), inputlen, outbuf.as_mut_ptr() as *mut libc::c_char, outbuf.len()) } != 0 {
+        if unsafe {
+            api(
+                inbuf.as_ptr(),
+                inputlen,
+                outbuf.as_mut_ptr() as *mut libc::c_char,
+                outbuf.len(),
+            )
+        } != 0
+        {
             let err = io::Error::last_os_error();
 
             match err.raw_os_error() {
@@ -1860,9 +1872,11 @@ fn rctl_api_wrapper<S: Into<String>>(
 
         // If everything went well, convert the return C string in the outbuf
         // back into an easily usable Rust string and return.
-        break Ok(unsafe { CStr::from_ptr(outbuf.as_ptr() as *mut libc::c_char) }
-            .to_string_lossy()
-            .into());
+        break Ok(
+            unsafe { CStr::from_ptr(outbuf.as_ptr() as *mut libc::c_char) }
+                .to_string_lossy()
+                .into(),
+        );
     }
 }
 
@@ -1993,7 +2007,8 @@ pub mod tests {
             Limit {
                 amount: 100 * 1024 * 1024,
                 per: None
-            }.to_string(),
+            }
+            .to_string(),
             "100m".to_string()
         );
 
@@ -2001,7 +2016,8 @@ pub mod tests {
             Limit {
                 amount: 100 * 1024 * 1024,
                 per: Some(SubjectType::User)
-            }.to_string(),
+            }
+            .to_string(),
             "100m/user".to_string()
         );
 
@@ -2009,7 +2025,8 @@ pub mod tests {
             Limit {
                 amount: 42,
                 per: Some(SubjectType::LoginClass)
-            }.to_string(),
+            }
+            .to_string(),
             "42/loginclass".to_string()
         );
     }
@@ -2055,26 +2072,18 @@ pub mod tests {
         assert!(":::=/".parse::<Rule>().is_err());
         assert!("user:missing_resource:=100m/user".parse::<Rule>().is_err());
         assert!("user:missing_resource=100m/user".parse::<Rule>().is_err());
-        assert!(
-            "user:too:many:colons:vmemoryuse:deny=100m/user"
-                .parse::<Rule>()
-                .is_err()
-        );
-        assert!(
-            "loginclass:nolimit:vmemoryuse:deny="
-                .parse::<Rule>()
-                .is_err()
-        );
-        assert!(
-            "loginclass:nolimit:vmemoryuse:deny"
-                .parse::<Rule>()
-                .is_err()
-        );
-        assert!(
-            "loginclass:equals:vmemoryuse:deny=123=456"
-                .parse::<Rule>()
-                .is_err()
-        );
+        assert!("user:too:many:colons:vmemoryuse:deny=100m/user"
+            .parse::<Rule>()
+            .is_err());
+        assert!("loginclass:nolimit:vmemoryuse:deny="
+            .parse::<Rule>()
+            .is_err());
+        assert!("loginclass:nolimit:vmemoryuse:deny"
+            .parse::<Rule>()
+            .is_err());
+        assert!("loginclass:equals:vmemoryuse:deny=123=456"
+            .parse::<Rule>()
+            .is_err());
         assert!("-42".parse::<Rule>().is_err());
         assert!("".parse::<Rule>().is_err());
         assert!("bogus".parse::<Rule>().is_err());
@@ -2149,18 +2158,17 @@ pub mod tests {
         filter.remove_rules().expect("Could not remove rules");
     }
 
-    #[cfg(feature="serialize")]
+    #[cfg(feature = "serialize")]
     #[test]
     fn serialize_rule() {
         let rule = "process:23:vmemoryuse:sigterm=100m"
             .parse::<Rule>()
             .expect("Could not parse rule");
 
-        let serialized = serde_json::to_string(&rule)
-            .expect("Could not serialize rule");
+        let serialized = serde_json::to_string(&rule).expect("Could not serialize rule");
 
-        let rule_map: serde_json::Value = serde_json::from_str(&serialized)
-            .expect("Could not load serialized rule");
+        let rule_map: serde_json::Value =
+            serde_json::from_str(&serialized).expect("Could not load serialized rule");
 
         assert_eq!(rule_map["subject"]["Process"], 23);
         assert_eq!(rule_map["resource"], "VMemoryUse");
