@@ -30,7 +30,7 @@ jobs:
         run: vagrant ssh ${{ matrix.box }} -- "cd /vagrant; cargo build"
 
       - name: Collect coverage
-        run:
+        run: |
           vagrant ssh ${{ matrix.box }} -- "cd /vagrant; cargo kcov -- --verify --exclude-pattern=/home/vagrant/.cargo,/usr/lib,/usr/local/lib,/usr/src/lib/"
           vagrant ssh ${{ matrix.box }} -- "cd /vagrant/target; tar cf - cov/" | tar xv
 
