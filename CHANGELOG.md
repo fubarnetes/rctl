@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased] - ReleaseDate
+### Changed
+- CI is now based on GitHub Actions (#25)
+- Updated the nix crate to 0.20 (#28)
+- Updated the number_prefix crate (#18)
+- updated the users crate (#22)
+
+### Fixed
+- Fixed build on ARM/POWER (#29)
+- Handle FreeBSD 13 changes in State::check (#31)
+
 ## [0.1.0] - 2019-03-30
 ### Added
 - Serde feature flag (#6)
