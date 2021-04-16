@@ -38,18 +38,7 @@
 //!
 //! [`rctl(8)`]: https://www.freebsd.org/cgi/man.cgi?query=rctl&sektion=8&manpath=FreeBSD+11.2-stable
 
-#[macro_use]
-extern crate failure;
-extern crate libc;
-extern crate nix;
-extern crate number_prefix;
-extern crate sysctl;
-extern crate users;
-
-#[cfg(feature = "serialize")]
-#[macro_use]
-extern crate serde;
-
+use failure::Fail;
 pub use nix::sys::signal::Signal;
 use number_prefix::{NumberPrefix, Prefix};
 use std::collections::HashMap;
@@ -60,7 +49,7 @@ use std::num;
 use std::str;
 
 #[cfg(feature = "serialize")]
-use serde::Serializer;
+use serde::Serialize;
 
 use sysctl::Sysctl;
 
@@ -880,7 +869,7 @@ impl fmt::Display for Action {
 #[cfg(feature = "serialize")]
 fn signal_serialize<S>(signal: &Signal, s: S) -> Result<S::Ok, S::Error>
 where
-    S: Serializer,
+    S: serde::Serializer,
 {
     let sig_str = format!("{:?}", signal);
     s.serialize_str(&sig_str)

@@ -9,6 +9,7 @@ categories = ["os:unix-apis", "api-bindings"]
 readme = "README.md"
 repository = "https://github.com/fubarnetes/rctl"
 documentation = "https://fubarnetes.github.io/rctl/rctl/"
+edition = "2018"
 
 [badges]
 maintenance = { status = "experimental" }
