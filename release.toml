@@ -13,3 +13,8 @@ replace="{{version}}"
 file="CHANGELOG.md"
 search="ReleaseDate"
 replace="{{date}}"
+
+[[post-release-replacements]]
+file="CHANGELOG.md"
+search="# Changelog"
+replace="# Changelog\n\n## [Unreleased] - ReleaseDate"
