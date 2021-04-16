@@ -113,9 +113,7 @@ pub enum Error {
 /// Helper module containing enums representing [Subjects](Subject)
 mod subject {
     use super::ParseError;
-    use libc;
     use std::fmt;
-    use users;
     use users::{get_user_by_name, get_user_by_uid};
 
     /// Represents a user subject
