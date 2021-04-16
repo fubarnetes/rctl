@@ -20,11 +20,11 @@ is-it-maintained-open-issues = { repository = "fubarnetes/rctl" }
 serialize = ["serde", "serde_json"]
 
 [dependencies]
-failure = "0.1"
 libc = "0.2"
 nix = "0.20"
 number_prefix = "0.4"
 sysctl = "0.4"
 serde = { version="1.0", features = ["derive"], optional=true }
 serde_json = { version="1.0", optional=true }
+thiserror = "1.0"
 users = "0.11.0"
