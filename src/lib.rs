@@ -38,7 +38,6 @@
 //!
 //! [`rctl(8)`]: https://www.freebsd.org/cgi/man.cgi?query=rctl&sektion=8&manpath=FreeBSD+11.2-stable
 
-use failure::Fail;
 pub use nix::sys::signal::Signal;
 use number_prefix::{NumberPrefix, Prefix};
 use std::collections::HashMap;
@@ -49,61 +48,59 @@ use std::num;
 use std::str;
 
 use sysctl::Sysctl;
+use thiserror::Error;
 
 // Set to the same value as found in rctl.c in FreeBSD 11.1
 const RCTL_DEFAULT_BUFSIZE: usize = 128 * 1024;
 
-#[derive(Debug, Fail, PartialEq, Clone)]
+#[derive(Debug, Error, PartialEq, Clone)]
 pub enum ParseError {
-    #[fail(display = "Unknown subject type: {}", _0)]
+    #[error("Unknown subject type: {0}")]
     UnknownSubjectType(String),
 
-    #[fail(display = "No such user: {}", _0)]
+    #[error("No such user: {0}")]
     UnknownUser(String),
 
-    #[fail(display = "Unknown resource: {}", _0)]
+    #[error("Unknown resource: {0}")]
     UnknownResource(String),
 
-    #[fail(display = "Unknown action: {}", _0)]
+    #[error("Unknown action: {0}")]
     UnknownAction(String),
 
-    #[fail(display = "Bogus data at end of limit: {}", _0)]
+    #[error("Bogus data at end of limit: {0}")]
     LimitBogusData(String),
 
-    #[fail(display = "Invalid limit literal: {}", _0)]
+    #[error("Invalid limit literal: {0}")]
     InvalidLimitLiteral(String),
 
-    #[fail(display = "Invalid numeric value: {}", _0)]
-    InvalidNumeral(#[cause] num::ParseIntError),
+    #[error("Invalid numeric value: {0}")]
+    InvalidNumeral(num::ParseIntError),
 
-    #[fail(display = "No subject specified")]
+    #[error("No subject specified")]
     NoSubjectGiven,
 
-    #[fail(display = "Bogus data at end of subject: {}", _0)]
+    #[error("Bogus data at end of subject: {0}")]
     SubjectBogusData(String),
 
-    #[fail(display = "Invalid Rule syntax: '{}'", _0)]
+    #[error("Invalid Rule syntax: '{0}'")]
     InvalidRuleSyntax(String),
 }
 
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum Error {
-    #[fail(display = "Parse Error: {}", _0)]
-    ParseError(#[cause] ParseError),
+    #[error("Parse Error: {0}")]
+    ParseError(ParseError),
 
-    #[fail(display = "OS Error: {}", _0)]
-    OsError(#[cause] io::Error),
+    #[error("OS Error: {0}")]
+    OsError(io::Error),
 
-    #[fail(
-        display = "An interior Nul byte was found while attempting to construct a CString: {}",
-        _0
-    )]
-    CStringError(#[cause] NulError),
+    #[error("An interior Nul byte was found while attempting to construct a CString: {0}")]
+    CStringError(NulError),
 
-    #[fail(display = "The statistics returned by the kernel were invalid.")]
+    #[error("The statistics returned by the kernel were invalid.")]
     InvalidStatistics,
 
-    #[fail(display = "Invalid RCTL / RACCT kernel state: {}", _0)]
+    #[error("Invalid RCTL / RACCT kernel state: {0}")]
     InvalidKernelState(State),
 }
 
