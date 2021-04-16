@@ -48,9 +48,6 @@ use std::io;
 use std::num;
 use std::str;
 
-#[cfg(feature = "serialize")]
-use serde::Serialize;
-
 use sysctl::Sysctl;
 
 // Set to the same value as found in rctl.c in FreeBSD 11.1
@@ -118,7 +115,7 @@ mod subject {
 
     /// Represents a user subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature = "serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
     pub struct User(pub users::uid_t);
 
     impl User {
@@ -152,7 +149,7 @@ mod subject {
 
     /// Represents a process subject
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature = "serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
     pub struct Process(pub libc::pid_t);
 
     impl fmt::Display for Process {
@@ -169,7 +166,7 @@ mod subject {
 
     /// Represents a jail subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature = "serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
     pub struct Jail(pub String);
 
     impl fmt::Display for Jail {
@@ -186,7 +183,7 @@ mod subject {
 
     /// Represents a login class subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature = "serialize", derive(Serialize))]
+    #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
     pub struct LoginClass(pub String);
 
     impl fmt::Display for LoginClass {
@@ -244,7 +241,7 @@ mod subject {
 ///
 /// [`rctl(8)`]: https://www.freebsd.org/cgi/man.cgi?query=rctl&sektion=8&manpath=FreeBSD+11.2-stable
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize))]
 pub enum Subject {
     Process(subject::Process),
     Jail(subject::Jail),
@@ -417,7 +414,7 @@ impl str::FromStr for Subject {
 
 /// The type of a [Subject].
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize))]
 pub enum SubjectType {
     Process,
     Jail,
@@ -482,7 +479,7 @@ impl fmt::Display for SubjectType {
 
 /// An Enum representing a resource type
 #[derive(Clone, Copy, Debug, PartialEq, Hash, Eq)]
-#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize))]
 pub enum Resource {
     /// CPU time, in seconds
     CpuTime,
@@ -686,7 +683,7 @@ impl fmt::Display for Resource {
 
 /// Represents the action to be taken when a [Subject] offends against a Rule.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize))]
 pub enum Action {
     /// Deny the resource allocation
     ///
@@ -876,7 +873,7 @@ where
 /// Defines how much of a [Resource] a process can use beofore the defined
 /// [Action] triggers.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize))]
 pub struct Limit {
     amount: usize,
     per: Option<SubjectType>,
@@ -1031,7 +1028,7 @@ impl<'a> From<&'a Limit> for String {
 /// assert_eq!(rule.to_string(), "user:nobody:vmemoryuse:deny=1g".to_string());
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "serialize", derive(serde::Serialize))]
 pub struct Rule {
     pub subject: Subject,
     pub resource: Resource,
