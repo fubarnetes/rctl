@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - ReleaseDate
+## [0.2.0] - 2021-09-25
 ### Changed
 - CI is now based on GitHub Actions (#25)
 - Updated the nix crate to 0.20 (#28)
