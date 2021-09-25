@@ -5,7 +5,9 @@
 - CI is now based on GitHub Actions (#25)
 - Updated the nix crate to 0.20 (#28)
 - Updated the number_prefix crate (#18)
-- updated the users crate (#22)
+- Updated the users crate (#22)
+- Update to 2018 edition (#37)
+- Update the nix crate (#41)
 
 ### Fixed
 - Fixed build on ARM/POWER (#29)
