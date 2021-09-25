@@ -1,6 +1,3 @@
-upload-doc = true
-doc-branch = "gh-pages"
-tag-prefix = "v"
 tag-message = "Release {{version}}"
 pre-release-commit-message = "release: {{version}}"
 
