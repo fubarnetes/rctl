@@ -790,6 +790,7 @@ impl Action {
                 Signal::SIGSYS => "sigsys",
                 Signal::SIGEMT => "sigemt",
                 Signal::SIGINFO => "siginfo",
+                _ => "unknown",
             },
         }
     }
