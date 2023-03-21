@@ -1,6 +1,13 @@
 # Changelog
 
 ## [Unreleased] - ReleaseDate
+### Changed
+- Updated CI to use latest supported FreeBSD versions (#48)
+- Updated the nix crate (#48)
+- Updated the sysctl crate (#48)
+- Updated all dependencies (#48)
+- Update to the 2021 edition (#48)
+
 
 ## [0.2.0] - 2021-09-25
 ### Changed
