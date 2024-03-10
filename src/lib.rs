@@ -108,32 +108,37 @@ pub enum Error {
 mod subject {
     use super::ParseError;
     use std::fmt;
-    use users::{get_user_by_name, get_user_by_uid};
+    use nix::unistd::{self, Uid};
 
     /// Represents a user subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
     #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
-    pub struct User(pub users::uid_t);
+    pub struct User(pub Uid);
 
     impl User {
         pub fn from_uid(uid: libc::uid_t) -> User {
-            User(uid as users::uid_t)
+            User(Uid::from_raw(uid))
         }
 
         pub fn from_name(name: &str) -> Result<User, ParseError> {
-            let uid = get_user_by_name(name)
+            let uid = unistd::User::from_name(name)
+                // Note: the only documented error that getpwnam_r may return is
+                // ERANGE, and Nix is supposed to handle that one, so it should
+                // "never" return Err
+                .unwrap_or(None)
                 .ok_or_else(|| ParseError::UnknownUser(name.into()))?
-                .uid();
+                .uid;
 
-            Ok(User::from_uid(uid))
+            Ok(User(uid))
         }
     }
 
     impl fmt::Display for User {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            match get_user_by_uid(self.0) {
-                Some(user) => write!(f, "user:{}", user.name().to_str().ok_or(fmt::Error)?),
-                None => write!(f, "user:{}", self.0),
+            match unistd::User::from_uid(self.0) {
+                Err(e) => write!(f, "user: <{}>", e),
+                Ok(Some(user)) => write!(f, "user:{}", user.name),
+                Ok(None) => write!(f, "user:{}", self.0),
             }
         }
     }
