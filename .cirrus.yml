@@ -3,7 +3,6 @@ setup: &SETUP
     HOME: /tmp # cargo needs it
     RUSTFLAGS: -D warnings
   setup_script:
-    - pkg install -y llvm
     - fetch https://sh.rustup.rs -o rustup.sh
     - sh rustup.sh -y --profile=minimal --default-toolchain $VERSION
 
@@ -42,6 +41,7 @@ task:
     fingerprint_script: cat Cargo.lock || echo ""
   test_script:
     - . $HOME/.cargo/env
+    - cargo test --target $TARGET
     - cargo test --all-features --target $TARGET
   doc_script:
     - . $HOME/.cargo/env
