@@ -702,7 +702,6 @@ pub enum Action {
     /// [`ReadBps`], [`WriteBps`], [`ReadIops`], [`WriteIops`]
     ///
     /// [`CpuTime`]: Resource::CpuTime
-
     /// [`WallClock`]: Resource::Wallclock
     /// [`ReadBps`]: Resource::ReadBps
     /// [`WriteBps`]: Resource::WriteBps
@@ -2023,7 +2022,7 @@ pub mod tests {
                 subject: Subject::user_name("nobody").expect("no user 'nobody'"),
                 resource: Resource::VMemoryUse,
                 action: Action::Deny,
-                limit: Limit::amount(1 * 1024 * 1024 * 1024),
+                limit: Limit::amount(1 << 30),
             }
         );
 
