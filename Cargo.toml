@@ -17,6 +17,13 @@ maintenance = { status = "experimental" }
 is-it-maintained-issue-resolution = { repository = "fubarnetes/rctl" }
 is-it-maintained-open-issues = { repository = "fubarnetes/rctl" }
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+targets = [
+  "x86_64-unknown-freebsd",
+]
+
 [features]
 serialize = ["serde", "serde_json"]
 
