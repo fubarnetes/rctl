@@ -1192,16 +1192,6 @@ impl<'a> IntoIterator for &'a RuleParsingIntoIter<String> {
     }
 }
 
-trait RuleParsingExt<'a>: Sized {
-    fn parse_rules(self) -> RuleParserAdapter<Self>;
-}
-
-impl<'a> RuleParsingExt<'a> for str::Split<'a, &'a str> {
-    fn parse_rules(self) -> RuleParserAdapter<Self> {
-        RuleParserAdapter { inner: self }
-    }
-}
-
 /// A filter can match a set of [Rules](Rule).
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Filter {
