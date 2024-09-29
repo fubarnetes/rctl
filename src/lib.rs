@@ -50,6 +50,8 @@ use std::str;
 use sysctl::Sysctl;
 use thiserror::Error;
 
+mod ffi;
+
 // Set to the same value as found in rctl.c in FreeBSD 11.1
 const RCTL_DEFAULT_BUFSIZE: usize = 128 * 1024;
 
@@ -302,18 +304,9 @@ impl Subject {
     /// println!("{:#?}", usage);
     /// ```
     pub fn usage(&self) -> Result<HashMap<Resource, usize>, Error> {
-        extern "C" {
-            fn rctl_get_racct(
-                inbufp: *const libc::c_char,
-                inbuflen: libc::size_t,
-                outbufp: *mut libc::c_char,
-                outbuflen: libc::size_t,
-            ) -> libc::c_int;
-        }
-
         let filter = Filter::new().subject(self);
 
-        let rusage = rctl_api_wrapper(rctl_get_racct, &filter)?;
+        let rusage = rctl_api_wrapper(ffi::rctl_get_racct, &filter)?;
 
         let mut map: HashMap<Resource, usize> = HashMap::new();
 
@@ -341,16 +334,7 @@ impl Subject {
 
     /// Get an IntoIterator over the rules that apply to this subject.
     pub fn limits(&self) -> Result<RuleParsingIntoIter<String>, Error> {
-        extern "C" {
-            fn rctl_get_limits(
-                inbufp: *const libc::c_char,
-                inbuflen: libc::size_t,
-                outbufp: *mut libc::c_char,
-                outbuflen: libc::size_t,
-            ) -> libc::c_int;
-        }
-
-        let outbuf = rctl_api_wrapper(rctl_get_limits, self)?;
+        let outbuf = rctl_api_wrapper(ffi::rctl_get_limits, self)?;
 
         Ok(RuleParsingIntoIter { inner: outbuf })
     }
@@ -1070,16 +1054,7 @@ impl Rule {
     /// # rule.remove();
     /// ```
     pub fn apply(&self) -> Result<(), Error> {
-        extern "C" {
-            fn rctl_add_rule(
-                inbufp: *const libc::c_char,
-                inbuflen: libc::size_t,
-                outbufp: *mut libc::c_char,
-                outbuflen: libc::size_t,
-            ) -> libc::c_int;
-        }
-
-        rctl_api_wrapper(rctl_add_rule, self)?;
+        rctl_api_wrapper(ffi::rctl_add_rule, self)?;
 
         Ok(())
     }
@@ -1408,16 +1383,7 @@ impl Filter {
     ///
     /// [Rules]: Rule
     pub fn rules(&self) -> Result<RuleParsingIntoIter<String>, Error> {
-        extern "C" {
-            fn rctl_get_rules(
-                inbufp: *const libc::c_char,
-                inbuflen: libc::size_t,
-                outbufp: *mut libc::c_char,
-                outbuflen: libc::size_t,
-            ) -> libc::c_int;
-        }
-
-        let outbuf = rctl_api_wrapper(rctl_get_rules, self)?;
+        let outbuf = rctl_api_wrapper(ffi::rctl_get_rules, self)?;
 
         Ok(RuleParsingIntoIter { inner: outbuf })
     }
@@ -1465,16 +1431,7 @@ impl Filter {
     ///
     /// [Rules]: Rule
     pub fn remove_rules(&self) -> Result<(), Error> {
-        extern "C" {
-            fn rctl_remove_rule(
-                inbufp: *const libc::c_char,
-                inbuflen: libc::size_t,
-                outbufp: *mut libc::c_char,
-                outbuflen: libc::size_t,
-            ) -> libc::c_int;
-        }
-
-        rctl_api_wrapper(rctl_remove_rule, self)?;
+        rctl_api_wrapper(ffi::rctl_remove_rule, self)?;
 
         Ok(())
     }
