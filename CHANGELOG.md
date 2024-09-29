@@ -7,7 +7,8 @@
 - Updated the sysctl crate (#48)
 - Updated all dependencies (#48)
 - Update to the 2021 edition (#48)
-
+- Eliminate dependency on unmaintained "users" crate (#51)
+- Fix the build with `-Zdirect-minimal-versions` (#60)
 
 ## [0.2.0] - 2021-09-25
 ### Changed
