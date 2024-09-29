@@ -112,7 +112,6 @@ mod subject {
 
     /// Represents a user subject
     #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-    #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
     pub struct User(pub Uid);
 
     impl User {
@@ -140,6 +139,15 @@ mod subject {
                 Ok(Some(user)) => write!(f, "user:{}", user.name),
                 Ok(None) => write!(f, "user:{}", self.0),
             }
+        }
+    }
+
+    #[cfg(feature = "serialize")]
+    impl serde::Serialize for User {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where S: serde::Serializer
+        {
+            self.0.as_raw().serialize(serializer)
         }
     }
 
