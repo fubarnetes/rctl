@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         box:
-          - fbsd_13_1
+          - fbsd_14_1
 
     steps:
       - uses: actions/checkout@v2
