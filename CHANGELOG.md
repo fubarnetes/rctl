@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - ReleaseDate
+## [0.3.0] - 2024-10-01
 ### Changed
 - Updated CI to use latest supported FreeBSD versions (#48)
 - Updated the nix crate (#64)
