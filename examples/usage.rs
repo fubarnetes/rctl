@@ -10,5 +10,5 @@ fn main() {
 
     let usage = subject.usage().expect("Could not get RCTL usage");
 
-    println!("{:#?}", usage);
+    println!("{usage:#?}");
 }

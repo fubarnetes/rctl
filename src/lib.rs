@@ -137,7 +137,7 @@ mod subject {
     impl fmt::Display for User {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             match unistd::User::from_uid(self.0) {
-                Err(e) => write!(f, "user: <{}>", e),
+                Err(e) => write!(f, "user: <{e}>"),
                 Ok(Some(user)) => write!(f, "user:{}", user.name),
                 Ok(None) => write!(f, "user:{}", self.0),
             }
@@ -173,7 +173,7 @@ mod subject {
 
     impl<'a> From<&'a Process> for String {
         fn from(proc: &'a Process) -> String {
-            format!("{}", proc)
+            format!("{proc}")
         }
     }
 
@@ -190,7 +190,7 @@ mod subject {
 
     impl<'a> From<&'a Jail> for String {
         fn from(jail: &'a Jail) -> String {
-            format!("{}", jail)
+            format!("{jail}")
         }
     }
 
@@ -207,7 +207,7 @@ mod subject {
 
     impl<'a> From<&'a LoginClass> for String {
         fn from(login_class: &'a LoginClass) -> String {
-            format!("{}", login_class)
+            format!("{login_class}")
         }
     }
 
@@ -343,10 +343,10 @@ impl Subject {
 impl fmt::Display for Subject {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Subject::Process(p) => write!(f, "{}", p),
-            Subject::User(u) => write!(f, "{}", u),
-            Subject::Jail(j) => write!(f, "{}", j),
-            Subject::LoginClass(c) => write!(f, "{}", c),
+            Subject::Process(p) => write!(f, "{p}"),
+            Subject::User(u) => write!(f, "{u}"),
+            Subject::Jail(j) => write!(f, "{j}"),
+            Subject::LoginClass(c) => write!(f, "{c}"),
         }
     }
 }
@@ -468,7 +468,7 @@ impl<'a> From<&'a SubjectType> for String {
 impl fmt::Display for SubjectType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let r: &'static str = self.into();
-        write!(f, "{}", r)
+        write!(f, "{r}")
     }
 }
 
@@ -861,7 +861,7 @@ fn signal_serialize<S>(signal: &Signal, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    let sig_str = format!("{:?}", signal);
+    let sig_str = format!("{signal:?}");
     s.serialize_str(&sig_str)
 }
 
@@ -966,7 +966,7 @@ impl str::FromStr for Limit {
 impl fmt::Display for Limit {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let amount = match NumberPrefix::binary(self.amount as f64) {
-            NumberPrefix::Standalone(amt) => format!("{}", amt),
+            NumberPrefix::Standalone(amt) => format!("{amt}"),
             NumberPrefix::Prefixed(prefix, amt) => {
                 let prefix = match prefix {
                     Prefix::Kibi => "k",
@@ -980,23 +980,23 @@ impl fmt::Display for Limit {
                     _ => panic!("called binary_prefix but got decimal prefix"),
                 };
 
-                format!("{}{}", amt, prefix)
+                format!("{amt}{prefix}")
             }
         };
 
         let per = match &self.per {
-            Some(ref s) => format!("/{}", s),
+            Some(ref s) => format!("/{s}"),
             None => "".to_string(),
         };
 
-        write!(f, "{}{}", amount, per)
+        write!(f, "{amount}{per}")
     }
 }
 
 impl<'a> From<&'a Limit> for String {
     fn from(limit: &'a Limit) -> String {
         let per = match &limit.per {
-            Some(ref s) => format!("/{}", s),
+            Some(ref s) => format!("/{s}"),
             None => "".to_string(),
         };
         format!("{}{}", limit.amount, per)
@@ -1102,7 +1102,7 @@ impl<'a> From<&'a Rule> for String {
         let resource: &str = (&rule.resource).into();
         let action: &str = (&rule.action).into();
         let limit: String = (&rule.limit).into();
-        format!("{}:{}:{}={}", subject, resource, action, limit)
+        format!("{subject}:{resource}:{action}={limit}")
     }
 }
 
@@ -1445,12 +1445,12 @@ impl fmt::Display for Filter {
             Filter {
                 subject_type: Some(s),
                 ..
-            } => write!(f, "{}:", s),
+            } => write!(f, "{s}:"),
             Filter {
                 subject_type: None,
                 subject: Some(ref s),
                 ..
-            } => write!(f, "{}", s),
+            } => write!(f, "{s}"),
             Filter {
                 subject_type: None,
                 subject: None,
@@ -1471,7 +1471,7 @@ impl fmt::Display for Filter {
         }
 
         match &self.resource {
-            Some(resource) => write!(f, ":{}", resource),
+            Some(resource) => write!(f, ":{resource}"),
             None => write!(f, ":"),
         }?;
 
@@ -1487,7 +1487,7 @@ impl fmt::Display for Filter {
         }
 
         match &self.action {
-            Some(action) => write!(f, ":{}", action),
+            Some(action) => write!(f, ":{action}"),
             None => write!(f, ":"),
         }?;
 
@@ -1502,7 +1502,7 @@ impl fmt::Display for Filter {
         }
 
         match &self.limit {
-            Some(limit) => write!(f, "={}", limit),
+            Some(limit) => write!(f, "={limit}"),
             None => write!(
                 f,
                 "=/{}",
@@ -1534,7 +1534,7 @@ impl<'a> From<&'a Filter> for String {
             None => "".into(),
         };
 
-        format!("{}:{}:{}={}", subject, resource, action, limit)
+        format!("{subject}:{resource}:{action}={limit}")
     }
 }
 
