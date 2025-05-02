@@ -12,7 +12,7 @@ fn main() {
 
     let serialized = serde_json::to_string(&subject).expect("Could not serialize RCTL subject.");
 
-    println!("{}", serialized);
+    println!("{serialized}");
 }
 
 #[cfg(not(feature = "serialize"))]
