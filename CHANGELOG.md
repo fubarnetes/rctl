@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] - ReleaseDate
+
+### Changed
+- Broadened the dependency spec on Nix, for better compatibility with
+  downstream consumers that have various requirements. (#80)
+
 ## [0.3.0] - 2024-10-01
 ### Changed
 - Updated CI to use latest supported FreeBSD versions (#48)
