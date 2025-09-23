@@ -1986,18 +1986,26 @@ pub mod tests {
         assert!(":::=/".parse::<Rule>().is_err());
         assert!("user:missing_resource:=100m/user".parse::<Rule>().is_err());
         assert!("user:missing_resource=100m/user".parse::<Rule>().is_err());
-        assert!("user:too:many:colons:vmemoryuse:deny=100m/user"
-            .parse::<Rule>()
-            .is_err());
-        assert!("loginclass:nolimit:vmemoryuse:deny="
-            .parse::<Rule>()
-            .is_err());
-        assert!("loginclass:nolimit:vmemoryuse:deny"
-            .parse::<Rule>()
-            .is_err());
-        assert!("loginclass:equals:vmemoryuse:deny=123=456"
-            .parse::<Rule>()
-            .is_err());
+        assert!(
+            "user:too:many:colons:vmemoryuse:deny=100m/user"
+                .parse::<Rule>()
+                .is_err()
+        );
+        assert!(
+            "loginclass:nolimit:vmemoryuse:deny="
+                .parse::<Rule>()
+                .is_err()
+        );
+        assert!(
+            "loginclass:nolimit:vmemoryuse:deny"
+                .parse::<Rule>()
+                .is_err()
+        );
+        assert!(
+            "loginclass:equals:vmemoryuse:deny=123=456"
+                .parse::<Rule>()
+                .is_err()
+        );
         assert!("-42".parse::<Rule>().is_err());
         assert!("".parse::<Rule>().is_err());
         assert!("bogus".parse::<Rule>().is_err());
