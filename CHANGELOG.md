@@ -9,6 +9,8 @@
 - Broadened the dependency spec for thiserror and sysctl, for better
   compatibility with downstream consumers that have various requirements. (#85)
 
+- Raised MSRV to 1.85.0, and converted code to Rust edition 2024 (#85)
+
 ## [0.3.0] - 2024-10-01
 ### Changed
 - Updated CI to use latest supported FreeBSD versions (#48)
