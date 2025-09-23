@@ -353,11 +353,11 @@ impl fmt::Display for Subject {
 
 impl<'a> From<&'a Subject> for String {
     fn from(subject: &'a Subject) -> String {
-        match subject {
-            Subject::Process(ref p) => p.into(),
-            Subject::User(ref u) => u.into(),
-            Subject::Jail(ref j) => j.into(),
-            Subject::LoginClass(ref c) => c.into(),
+        match &subject {
+            Subject::Process(p) => p.into(),
+            Subject::User(u) => u.into(),
+            Subject::Jail(j) => j.into(),
+            Subject::LoginClass(c) => c.into(),
         }
     }
 }
@@ -985,7 +985,7 @@ impl fmt::Display for Limit {
         };
 
         let per = match &self.per {
-            Some(ref s) => format!("/{s}"),
+            Some(s) => format!("/{s}"),
             None => "".to_string(),
         };
 
@@ -996,7 +996,7 @@ impl fmt::Display for Limit {
 impl<'a> From<&'a Limit> for String {
     fn from(limit: &'a Limit) -> String {
         let per = match &limit.per {
-            Some(ref s) => format!("/{s}"),
+            Some(s) => format!("/{s}"),
             None => "".to_string(),
         };
         format!("{}{}", limit.amount, per)
@@ -1360,7 +1360,7 @@ impl Filter {
     }
 
     fn sanity(&self) {
-        if let (Some(ref subject), Some(ref subject_type)) = (&self.subject, &self.subject_type) {
+        if let (Some(subject), Some(subject_type)) = (&self.subject, &self.subject_type) {
             let actual_type: SubjectType = subject.into();
             assert_eq!(&actual_type, subject_type);
         }
@@ -1448,7 +1448,7 @@ impl fmt::Display for Filter {
             } => write!(f, "{s}:"),
             Filter {
                 subject_type: None,
-                subject: Some(ref s),
+                subject: Some(s),
                 ..
             } => write!(f, "{s}"),
             Filter {
@@ -1986,18 +1986,26 @@ pub mod tests {
         assert!(":::=/".parse::<Rule>().is_err());
         assert!("user:missing_resource:=100m/user".parse::<Rule>().is_err());
         assert!("user:missing_resource=100m/user".parse::<Rule>().is_err());
-        assert!("user:too:many:colons:vmemoryuse:deny=100m/user"
-            .parse::<Rule>()
-            .is_err());
-        assert!("loginclass:nolimit:vmemoryuse:deny="
-            .parse::<Rule>()
-            .is_err());
-        assert!("loginclass:nolimit:vmemoryuse:deny"
-            .parse::<Rule>()
-            .is_err());
-        assert!("loginclass:equals:vmemoryuse:deny=123=456"
-            .parse::<Rule>()
-            .is_err());
+        assert!(
+            "user:too:many:colons:vmemoryuse:deny=100m/user"
+                .parse::<Rule>()
+                .is_err()
+        );
+        assert!(
+            "loginclass:nolimit:vmemoryuse:deny="
+                .parse::<Rule>()
+                .is_err()
+        );
+        assert!(
+            "loginclass:nolimit:vmemoryuse:deny"
+                .parse::<Rule>()
+                .is_err()
+        );
+        assert!(
+            "loginclass:equals:vmemoryuse:deny=123=456"
+                .parse::<Rule>()
+                .is_err()
+        );
         assert!("-42".parse::<Rule>().is_err());
         assert!("".parse::<Rule>().is_err());
         assert!("bogus".parse::<Rule>().is_err());

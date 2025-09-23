@@ -8,9 +8,9 @@ keywords = ["freebsd"]
 categories = ["os::freebsd-apis", "os::unix-apis", "api-bindings"]
 readme = "README.md"
 repository = "https://github.com/fubarnetes/rctl"
-rust-version = "1.70.0"
+rust-version = "1.85.0"
 documentation = "https://docs.rs/rctl"
-edition = "2021"
+edition = "2024"
 
 [badges]
 maintenance = { status = "experimental" }
@@ -31,7 +31,7 @@ serialize = ["serde", "serde_json"]
 libc = "0.2.155"
 nix = { version = ">=0.28.0, <0.31", default-features = false, features = [ "signal", "user" ] }
 number_prefix = "0.4"
-sysctl = ">=0.5.0, < 0.7"
+sysctl = ">=0.5.0, < 0.8"
 serde = { version="1.0.113", features = ["derive"], optional=true }
 serde_json = { version="1.0", optional=true }
-thiserror = "1.0.32"
+thiserror = ">=1.0.32, <3.0"
