@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] - ReleaseDate
+
+### Fixed
+
+- Replaced the unmainted `number_prefix` crate with `unit-prefix` (#87).
+
 ## [0.4.0] - 2025-09-23
 
 ### Changed

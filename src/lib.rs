@@ -39,13 +39,13 @@
 //! [`rctl(8)`]: https://www.freebsd.org/cgi/man.cgi?query=rctl&sektion=8&manpath=FreeBSD+11.2-stable
 
 pub use nix::sys::signal::Signal;
-use number_prefix::{NumberPrefix, Prefix};
 use std::collections::HashMap;
 use std::ffi::{CStr, CString, NulError};
 use std::fmt;
 use std::io;
 use std::num;
 use std::str;
+use unit_prefix::{NumberPrefix, Prefix};
 
 use sysctl::Sysctl;
 use thiserror::Error;
