@@ -14,12 +14,12 @@ task:
   matrix:
     - name: FreeBSD 14 amd64 nightly
       freebsd_instance:
-        image: freebsd-14-3-release-amd64-ufs
+        image: freebsd-14-4-release-amd64-ufs
     - name: FreeBSD 14 amd64 stable
       env:
         VERSION: 1.85.0
       freebsd_instance:
-        image: freebsd-14-3-release-amd64-ufs
+        image: freebsd-14-4-release-amd64-ufs
     - name: FreeBSD 14 i686 nightly
       # Test i686 FreeBSD in 32-bit emulation on a 64-bit host.
       env:
@@ -28,10 +28,10 @@ task:
         # https://github.com/rust-lang/rust/issues/130677
         VERSION: 1.85.0
       freebsd_instance:
-        image: freebsd-14-3-release-amd64-ufs
+        image: freebsd-14-4-release-amd64-ufs
     - name: FreeBSD 15 amd64 nightly
       freebsd_instance:
-        image: freebsd-15-0-alpha3-amd64-ufs
+        image: freebsd-15-0-release-amd64-ufs
   << : *SETUP
   extra_setup_script:
     - . $HOME/.cargo/env
@@ -55,7 +55,7 @@ lint_task:
     HOME: /tmp  # cargo cache needs it
     VERSION: nightly
   freebsd_instance:
-    image: freebsd-14-3-release-amd64-ufs
+    image: freebsd-14-4-release-amd64-ufs
   << : *SETUP
   extra_setup_script:
     - . $HOME/.cargo/env
