@@ -2,7 +2,7 @@
 
 FreeBSD resource limits and accounting with RCTL / RACCT
 
-[![Build Status](https://api.cirrus-ci.com/github/fubarnetes/rctl.svg)](https://cirrus-ci.com/github/fubarnetes/rctl)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/fubarnetes/rctl/ci.yml?branch=master&style=flat-square)](https://github.com/fubarnetes/rctl/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Code Coverage](https://img.shields.io/codecov/c/github/fubarnetes/rctl.svg?logo=codecov&style=flat-square)](https://codecov.io/gh/fubarnetes/rctl)
 [![Crates.io](https://img.shields.io/crates/v/rctl.svg?style=flat-square)](https://crates.io/crates/rctl)
 [![GitHub last commit](https://img.shields.io/github/last-commit/fubarnetes/rctl.svg?style=flat-square)](https://github.com/fubarnetes/librctl-rs/commits/master)

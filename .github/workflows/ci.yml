@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - freebsd_version: "14.4"
+            rust_version: "1.85.0"
+            target: x86_64-unknown-freebsd
+          - freebsd_version: "14.4"
+            rust_version: "1.85.0"
+            target: i686-unknown-freebsd
+          - freebsd_version: "14.4"
+            rust_version: "nightly"
+            target: x86_64-unknown-freebsd
+          - freebsd_version: "15.0"
+            rust_version: "nightly"
+            target: x86_64-unknown-freebsd
+    env:
+      RUSTFLAGS: -D warnings
+    name: FreeBSD/${{ matrix.target }} ${{ matrix.freebsd_version }} ${{ matrix.rust_version }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Start VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: ${{ matrix.freebsd_version }}
+          usesh: true
+          envs: RUSTFLAGS
+      - name: Install dependencies
+        shell: freebsd {0}
+        run: |
+          pkg install -y curl llvm
+          fetch https://sh.rustup.rs -o rustup.sh
+          sh rustup.sh -y --profile=minimal --default-toolchain ${{ matrix.rust_version }}
+      - name: Setup
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          if [ "${{ matrix.target }}" = "i686-unknown-freebsd" ]; then rustup target add --toolchain ${{ matrix.rust_version }} i686-unknown-freebsd; fi
+      - name: Build
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          cargo build --all-targets --target ${{ matrix.target }}
+          cargo build --all-features --all-targets --target ${{ matrix.target }}
+      - name: Test
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          cargo test --target ${{ matrix.target }}
+          cargo test --all-features --target ${{ matrix.target }}
+      - name: Doc
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          cargo doc --target ${{ matrix.target }} --no-deps --all-features
+      - name: Clippy
+        if: matrix.rust_version == 'nightly'
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          rustup component add clippy
+          cargo clippy --all-targets
+          cargo clippy --all-targets --all-features
+      - name: Fmt
+        if: matrix.rust_version == 'nightly'
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          rustup component add rustfmt
+          cargo fmt --all -- --check --color=never
+      - name: Audit
+        if: matrix.rust_version == 'nightly'
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          pkg install -y cargo-audit
+          cargo audit
+      - name: Minver
+        if: matrix.rust_version == 'nightly'
+        shell: freebsd {0}
+        run: |
+          . $HOME/.cargo/env
+          cargo update -Zdirect-minimal-versions
+          cargo check --all-features --all-targets --all
+
+  cross-docs:
+    name: Cross docs
+    runs-on: ubuntu-latest
+    container:
+      image: rustlang/rust:nightly
+    steps:
+      - uses: actions/checkout@v6
+      - name: Cross compile docs
+        run: |
+          rustup target add x86_64-unknown-freebsd
+          cargo doc --target x86_64-unknown-freebsd --no-deps --all-features
