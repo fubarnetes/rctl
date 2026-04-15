@@ -2,10 +2,10 @@
 
 FreeBSD resource limits and accounting with RCTL / RACCT
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/fubarnetes/rctl/ci.yml?branch=master&style=flat-square)](https://github.com/fubarnetes/rctl/actions/workflows/ci.yml?query=branch%3Amaster)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/fubarnetes/rctl/ci.yml?branch=main&style=flat-square)](https://github.com/fubarnetes/rctl/actions/workflows/ci.yml?query=branch%3Amain)
 [![Code Coverage](https://img.shields.io/codecov/c/github/fubarnetes/rctl.svg?logo=codecov&style=flat-square)](https://codecov.io/gh/fubarnetes/rctl)
 [![Crates.io](https://img.shields.io/crates/v/rctl.svg?style=flat-square)](https://crates.io/crates/rctl)
-[![GitHub last commit](https://img.shields.io/github/last-commit/fubarnetes/rctl.svg?style=flat-square)](https://github.com/fubarnetes/librctl-rs/commits/master)
+[![GitHub last commit](https://img.shields.io/github/last-commit/fubarnetes/rctl.svg?style=flat-square)](https://github.com/fubarnetes/librctl-rs/commits/main)
 [![Gitter](https://img.shields.io/gitter/room/fubarnetes/rctl.js.svg?style=flat-square)](https://gitter.im/fubarnetes/librctl-rs)
 [![Libraries.io for
 releases](https://img.shields.io/librariesio/release/cargo/rctl.svg?style=flat-square)](https://libraries.io/cargo/rctl/)
